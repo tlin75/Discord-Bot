@@ -2,7 +2,21 @@
 
 # Import and install required packages
 import discord as dc
+import requests
+import json
 
+"""
+Function that fetches a random meme from the public meme API.
+Returns the direct image URL of the meme.
+"""
+def get_meme():
+    response = requests.get('https://meme-api.com/gimme')
+    json_data = json.loads(response.text)
+    return json_data['url']
+
+"""
+Discord client class that handles different events (bot logging in, message sent in channel).
+"""
 class MyClient(dc.Client):
     # Event handler: Called when the bot successfully logs in
     async def on_ready(self):
@@ -16,9 +30,13 @@ class MyClient(dc.Client):
         # Ignores messages sent by bot itself
         if message.author == self.user:
             return
+        
         # Responds to $hello command
         if message.content.startswith('$hello'):
             await message.channel.send('Hello World!')
+        # Responds to $meme command with random meme
+        if message.content.startswith('$meme'):
+            await message.channel.send(get_meme())
 
 # Allow bot to read message content
 intents = dc.Intents.default()
